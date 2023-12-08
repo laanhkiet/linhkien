@@ -9,7 +9,7 @@
 	?>
 		<tr>
 		<form method="post">
-			<input type="hidden" name="action" value="capnhat">
+			<input type="hidden" name="action" value="capnnhat">
 			<input type="hidden" name="id" value="<?php echo $d["id"]; ?>">
 			<td><?php echo $d["id"]; ?></td>
 			<td><input class="form-control" name="ten" type="text" value="<?php echo $d["tendanhmuc"]; ?>"></td>
