@@ -4,59 +4,106 @@ if(!isset($_SESSION["nguoidung"]))
 
 require("../../model/database.php");
 require("../../model/danhmuc.php");
+require("../../model/mathang.php");
 
 // Xét xem có thao tác nào được chọn
 if(isset($_REQUEST["action"])){
     $action = $_REQUEST["action"];
 }
-else{   // mặc định là xem danh sách
+else{
     $action="xem";
 }
 
 $dm = new DANHMUC();
-$idsua = 0;
+$mh = new MATHANG();
 
 switch($action){
     case "xem":
-        $danhmuc = $dm->laydanhmuc();       
+        $mathang = $mh->laymathang();
+		include("main.php");
+        break;
+	case "them":
+		$danhmuc = $dm->laydanhmuc();
+		include("addform.php");
+        break;
+	case "xulythem":	
+		// xử lý file upload
+		$hinhanh = "images/products/" . basename($_FILES["filehinhanh"]["name"]); // đường dẫn ảnh lưu trong db
+		$duongdan = "../../" . $hinhanh; // nơi lưu file upload (đường dẫn tính theo vị trí hiện hành)
+		move_uploaded_file($_FILES["filehinhanh"]["tmp_name"], $duongdan);
+		// xử lý thêm		
+        $mathanghh = new MATHANG();
+		$mathanghh->settenmathang($_POST["txttenmathang"]);
+		$mathanghh->setmota($_POST["txtmota"]);
+		$mathanghh->setgiagoc($_POST["txtgianhap"]);
+		$mathanghh->setgiaban($_POST["txtgiaban"]);
+		$mathanghh->setsoluongton($_POST["txtsoluong"]);
+		$mathanghh->setdanhmuc_id($_POST["optdanhmuc"]);
+        $mathanghh->sethinhanh($hinhanh);
+		$mh->themmathang($mathanghh);
+		$mathang = $mh->laymathang();
+		include("main.php");
+        break;
+	case "xoa":
+		if(isset($_GET["id"])){
+            $mathanghh = new MATHANG();        
+            $mathanghh->setid($_GET["id"]);
+			$mh->xoamathang($mathanghh);
+        }
+		$mathang = $mh->laymathang();
+		include("main.php");
+		break;	
+    case "chitiet":
+        if(isset($_GET["id"])){ 
+            $m = $mh->laymathangtheoid($_GET["id"]);            
+            include("detail.php");
+        }
+        else{
+            $mathang = $mh->laymathang();        
+            include("main.php");            
+        }
+        break;
+    case "sua":
+        if(isset($_GET["id"])){ 
+            $m = $mh->laymathangtheoid($_GET["id"]);
+            $danhmuc = $dm->laydanhmuc(); 
+            include("updateform.php");
+        }
+        else{
+            $mathang = $mh->laymathang();        
+            include("main.php");            
+        }
+        break;
+    case "xulysua":
+        $mathanghh = new MATHANG();
+        $mathanghh->setid($_POST["txtid"]);
+        $mathanghh->setdanhmuc_id($_POST["optdanhmuc"]);
+        $mathanghh->settenmathang($_POST["txttenhang"]);
+        $mathanghh->setmota($_POST["txtmota"]);
+        $mathanghh->setgiagoc($_POST["txtgiagoc"]);
+        $mathanghh->setgiaban($_POST["txtgiaban"]);
+        $mathanghh->setsoluongton($_POST["txtsoluongton"]);
+        $mathanghh->setluotxem($_POST["txtluotxem"]);
+        $mathanghh->setluotmua($_POST["txtluotmua"]);
+        $mathanghh->sethinhanh($_POST["txthinhcu"]);
+
+        // upload file mới (nếu có)
+        if($_FILES["filehinhanh"]["name"]!=""){
+            // xử lý file upload -- Cần bổ dung kiểm tra: dung lượng, kiểu file, ...       
+            $hinhanh = "images/" . basename($_FILES["filehinhanh"]["name"]);// đường dẫn lưu csdl
+            $mathanghh->sethinhanh($hinhanh);
+            $duongdan = "../../" . $hinhanh; // đường dẫn lưu upload file        
+            move_uploaded_file($_FILES["filehinhanh"]["tmp_name"], $duongdan);
+        }
+        
+        // sửa mặt hàng
+        $mh->suamathang($mathanghh);         
+    
+        // hiển thị ds mặt hàng
+        $mathang = $mh->laymathang();    
         include("main.php");
         break;
-    case "sua": // hiển thị form
-    	$idsua = $_GET["id"];
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
-        break;
-    case "capnhat": // lưu dữ liệu sửa mới vào db
-    	// gán dữ liệu từ form
-    	$dmmoi = new DANHMUC();
-    	$dmmoi->setid($_POST["id"]);
-    	$dmmoi->settendanhmuc($_POST["ten"]);
-    	// sửa
-    	$dm->suadanhmuc($dmmoi);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
-        break;
-    case "them":
-    	// gán dữ liệu từ form
-    	$dmmoi = new DANHMUC();
-    	$dmmoi->settendanhmuc($_POST["ten"]);
-    	// thêm
-    	$dm->themdanhmuc($dmmoi);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
-        break;
-    case "xoa":
-    	// lấy dòng muốn xóa
-    	$dmxoa = new DANHMUC();
-    	$dmxoa->setid($_GET["id"]);
-    	// xóa
-    	$dm->xoadanhmuc($dmxoa);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
-        break;
+
     default:
         break;
 }
