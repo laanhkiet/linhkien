@@ -1,56 +1,51 @@
 <?php include("../inc/top.php"); ?>
+<div>
+  <h3>Quản lý người dùng</h3>
+  <!-- Thông báo lỗi nếu có -->
+  <?php
+  if(isset($tb)){
+  ?>
+  <div class="alert alert-danger alert-dismissible fade in">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Lỗi!</strong> <?php echo $tb; ?>
+  </div>
+  <?php
+  }
+  ?>
+  <!-- Nút mở hộp modal chứa form thêm mới -->
+  <div><a class="btn btn-primary" href="index.php?action=them"><span class="glyphicon glyphicon-plus"></span> Thêm người dùng</a></div>
 
-<h4 class="text-info">Danh sách danh mục</h4> 
-<table class="table table-hover">
-	<tr><th>ID</th><th>Tên danh mục</th><th>Sửa</th><th>Xóa</th></tr>
-	<?php 
-	foreach ($danhmuc as $d) : 
-		if($d["id"] == $idsua){ // hiển thị form
-	?>
-		<tr>
-		<form method="post">
-			<input type="hidden" name="action" value="capnhat">
-			<input type="hidden" name="id" value="<?php echo $d["id"]; ?>">
-			<td><?php echo $d["id"]; ?></td>
-			<td><input class="form-control" name="ten" type="text" value="<?php echo $d["tendanhmuc"]; ?>"></td>
-			<td><input class="btn btn-success" type="submit" value="Lưu"></td>
-		</form>
-			<td><a href="index.php?action=xoa&id=<?php echo $d["id"]; ?>" class="btn btn-danger">Xóa</a></td>
-		</tr>
+  <br>
 
-	<?php 
-		} // end if 
-		else {
-	?>
-		<tr>
-			<td><?php echo $d["id"]; ?></td>
-			<td><?php echo $d["tendanhmuc"]; ?></td>
-			<td><a href="index.php?action=sua&id=<?php echo $d["id"]; ?>" class="btn btn-warning">Sửa</a></td>
-			<td><a href="index.php?action=xoa&id=<?php echo $d["id"]; ?>" class="btn btn-danger">Xóa</a></td>
-		</tr>
-	<?php 
-		} // end else
-	endforeach; 
-	?>
-</table>
+  <!-- Danh sách người dùng -->
+  <table class="table table-hover">
+        <tr>
+		<th><a href="index.php?sort=email">Email</a></th>
+		<th><a href="index.php?sort=sodienthoai">Số điện thoại</a></th>
+		<th><a href="index.php?sort=hoten">Họ tên</a></th>
+		<th><a href="index.php?sort=loai">Loại quyền</a></th>
+		<th>Trạng thái</th>
+		<th>Khóa</th></tr>
+      <?php foreach ($nguoidung as $nd): ?>
+        <tr><td><?php echo $nd["email"]; ?></td>
+        	<td><?php echo $nd["sodienthoai"]; ?></td>
+			<td><?php echo $nd["hoten"]; ?></td>
+        	<td><?php if($nd["loai"]==1) echo "Quản trị";elseif($nd["loai"]==2) echo "Nhân viên"; else echo "Khách hàng" ; ?></td>
+          <td><?php if($nd["loai"]!=1) {if($nd["trangthai"]==1) echo "Kích hoạt"; else echo "Khóa" ; }?></td>
+          <td>
+          <?php 
+          if($nd["loai"]!=1) {
+            if($nd["trangthai"]==1){ ?>
+              <a href="?action=khoa&trangthai=0&mand=<?php echo $nd["id"]; ?>">Khóa</a></td></tr>
+            <?php 
+            }
+            else { ?>
+              <a href="?action=khoa&trangthai=1&mand=<?php echo $nd["id"]; ?>">Kích hoạt</a></td></tr>
+          <?php 
+            }
+          }
+      endforeach; ?>
+  </table>
 
-<h4><a class="text-decoration-none text-info" data-bs-toggle="collapse" data-bs-target="#demo">Thêm mới</a><h4>
-
-<div id="demo" class="collapse">
-	 
-	<form method="post"> 
-		<input type="hidden" name="action" value="them">
-	<div class="row">	
-		<div class="col">
-			<input type="text" class="form-control" name="ten" placeholder="Nhập tên danh mục">
-		</div>
-		<div class="col">
-			<input type="submit" class="btn btn-info" value="Lưu">
-		</div>
-		<div class="col"></div>
-	</div>
-	</form>
 </div>
-
-
 <?php include("../inc/bottom.php"); ?>

@@ -3,60 +3,74 @@ if(!isset($_SESSION["nguoidung"]))
     header("location:../index.php");
 
 require("../../model/database.php");
-require("../../model/danhmuc.php");
+require("../../model/nguoidung.php");
 
-// Xét xem có thao tác nào được chọn
 if(isset($_REQUEST["action"])){
     $action = $_REQUEST["action"];
 }
-else{   // mặc định là xem danh sách
-    $action="xem";
+else{
+    $action="macdinh"; 
 }
 
-$dm = new DANHMUC();
-$idsua = 0;
+$nguoidung = new NGUOIDUNG();
 
 switch($action){
-    case "xem":
-        $danhmuc = $dm->laydanhmuc();       
+    case "macdinh":   
+        $nguoidung = $nguoidung->laydanhsachnguoidung();   
+		// sắp xếp
+		if(isset($_GET["sort"])){
+			$sort = $_GET["sort"];
+			switch($sort){
+				case 'email':
+					usort($nguoidung, function($a, $b){ return strcmp($a["email"], $b["email"]); });
+					break;
+				case 'sodienthoai':
+					usort($nguoidung, function($a, $b){ return strcmp($b["sodienthoai"], $a["sodienthoai"]); });
+					break;
+				case 'hoten':
+					usort($nguoidung, function($a, $b){ return strcmp($b["hoten"], $a["hoten"]); });
+					break;
+				case 'loai':
+					usort($nguoidung, function($a, $b){ return $a["loai"] - $b["loai"]; });
+					break;
+				default:
+					ksort($nguoidung);
+					break;
+			}
+		}
         include("main.php");
         break;
-    case "sua": // hiển thị form
-    	$idsua = $_GET["id"];
-        $danhmuc = $dm->laydanhmuc();       
+    case "khoa":   
+        $mand = $_GET["mand"];
+        $trangthai = $_GET["trangthai"];
+        if(!$nguoidung->doitrangthai($mand, $trangthai)){
+            $tb = "Đã đổi trạng thái!";
+        }
+        $nguoidung = $nguoidung->laydanhsachnguoidung();     
         include("main.php");
         break;
-    case "capnhat": // lưu dữ liệu sửa mới vào db
-    	// gán dữ liệu từ form
-    	$dmmoi = new DANHMUC();
-    	$dmmoi->setid($_POST["id"]);
-    	$dmmoi->settendanhmuc($_POST["ten"]);
-    	// sửa
-    	$dm->suadanhmuc($dmmoi);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
+    case "them":        
+        include("addform.php");        
         break;
-    case "them":
-    	// gán dữ liệu từ form
-    	$dmmoi = new DANHMUC();
-    	$dmmoi->settendanhmuc($_POST["ten"]);
-    	// thêm
-    	$dm->themdanhmuc($dmmoi);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
+
+    case "xlthem":
+        $email = $_POST["txtemail"];
+        $matkhau = $_POST["txtmatkhau"];
+        $sodt = $_POST["txtdienthoai"];
+        $hoten = $_POST["txthoten"];
+        $loaind = $_POST["optloaind"];
+        if($nguoidung->laythongtinnguoidung($email)){   // có thể kiểm tra thêm số đt không trùng
+            $tb = "Email này đã được cấp tài khoản!";
+        }
+        else{
+            if(!$nguoidung->themnguoidung($email,$matkhau,$sodt,$hoten,$loaind)){
+                $tb = "Không thêm được!";
+            }
+        }
+        $nguoidung = $nguoidung->laydanhsachnguoidung();
+        include("main.php");        
         break;
-    case "xoa":
-    	// lấy dòng muốn xóa
-    	$dmxoa = new DANHMUC();
-    	$dmxoa->setid($_GET["id"]);
-    	// xóa
-    	$dm->xoadanhmuc($dmxoa);
-    	// load danh sách
-        $danhmuc = $dm->laydanhmuc();       
-        include("main.php");
-        break;
+    
     default:
         break;
 }
