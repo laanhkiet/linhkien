@@ -1,49 +1,34 @@
 <?php include("../inc/top.php"); ?>
+<div>
+  <h3>Thêm tài khoản người dùng</h3>
+  
+  <!-- Form thêm mới -->
+  
+  <div>
+    <form method="post">
+      <div class="my-3">        
+      <input class="form-control" type="email" name="txtemail" placeholder="Email" required>
+      </div>
+      <div class="my-3"><input class="form-control"  type="text" name="txtmatkhau" placeholder="Mật khẩu" required></div>
+      <div class="my-3">        
+      <input class="form-control" type="number" name="txtdienthoai" placeholder="Số điện thoại" required>
+      </div>
+      <div class="my-3">
+      <input class="form-control"  type="text" name="txthoten" placeholder="Họ tên" required></div>
+      <div class="my-3">
+      <label>Chọn quyền</label>
+      <select class="form-control" name="optloaind">                
+          <option value="1">Quản trị</option>
+          <option value="2" selected>Thành viên</option>
+          <option value="3">Khách hàng</option>
+      </select></div>
+      <div class="my-3">
+      <input type="hidden" name="action" value="xlthem" >
+      <input class="btn btn-primary"  type="submit" value="Thêm">
+      <input class="btn btn-warning"  type="reset" value="Hủy"></div>
+    </form>          
+  </div>
+        
 
-<h3>Thêm mặt hàng</h3> 
-<br>
-<form method="post" enctype="multipart/form-data" action="index.php">
-<input type="hidden" name="action" value="xulythem">
-<div class="mb-3 mt-3">
-	<label for="optdanhmuc" class="form-label">Hãng sản xuất</label>
-	<select class="form-select" name="optdanhmuc">
-	<?php
-	foreach($danhmuc as $d):
-	?>
-		<option value="<?php echo $d["id"]; ?>"><?php echo $d["tendanhmuc"]; ?></option>
-	<?php
-	endforeach;
-	?>
-	</select>
 </div>
-<div class="mb-3 mt-3">
-	<label for="txttenmathang" class="form-label">Tên mặt hàng</label>
-	<input class="form-control" type="text" name="txttenmathang" placeholder="Nhập tên" required>
-</div>
-<div class="mb-3 mt-3">
-	<label for="txtgianhap" class="form-label">Giá nhập</label>
-	<input class="form-control" type="number" name="txtgianhap" value="0">
-</div>
-<div class="mb-3 mt-3">
-	<label for="txtgiaban" class="form-label">Giá bán</label>
-	<input class="form-control" type="number" name="txtgiaban" value="0">
-</div>
-<div class="mb-3 mt-3">
-	<label for="txtsoluong" class="form-label">Số lượng</label>
-	<input class="form-control" type="number" name="txtsoluong" value="0">
-</div>
-<div class="mb-3 mt-3">
-	<label for="txtmota" class="form-label">Mô tả</label>
-	<textarea id="txtmota" rows="5" class="form-control" name="txtmota" placeholder="Nhập mô tả" required></textarea>
-</div>
-<div class="mb-3 mt-3">
-	<label>Hình ảnh</label>
-	<input class="form-control" type="file" name="filehinhanh">
-</div>
-<div class="mb-3 mt-3">
-	<input type="submit" value="Lưu" class="btn btn-success">
-	<input type="reset" value="Hủy" class="btn btn-warning">
-</div>
-</form>
-
 <?php include("../inc/bottom.php"); ?>
